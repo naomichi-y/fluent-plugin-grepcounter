@@ -26,6 +26,7 @@ class Fluent::GrepCounterOutput < Fluent::Output
 The target field key to grep out.
 Use with regexp or exclude.
 DESC
+  config_param :output_key, :string, :default => nil
   config_param :regexp, :string, :default => nil,
                :desc => 'The filtering regular expression.'
   config_param :exclude, :string, :default => nil,
@@ -188,7 +189,7 @@ DESC
           value = record[key].to_s
           throw :break_loop if @regexp and !match(@regexp, value)
           throw :break_loop if @exclude and match(@exclude, value)
-          matches << value # old style stores as an array of values
+          matches << (@output_key.nil? ? value : record[@output_key]) # old style stores as an array of values
         else
           @regexps.each do |key, regexp|
             throw :break_loop unless match(regexp, record[key].to_s)
