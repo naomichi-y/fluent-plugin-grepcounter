@@ -70,6 +70,10 @@ Then, output bocomes as belows (indented). You can see the `message` field is jo
 
     The target field key to grep out. Use with regexp or exclude. 
 
+- output\_key *field\_key*
+
+    The key to return when matching pattern.
+
 - regexp *regexp*
 
     The filtering regular expression
