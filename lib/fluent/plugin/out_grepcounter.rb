@@ -26,7 +26,8 @@ class Fluent::GrepCounterOutput < Fluent::Output
 The target field key to grep out.
 Use with regexp or exclude.
 DESC
-  config_param :output_key, :string, :default => nil
+  config_param :output_key, :string, :default => nil,
+               :desc => 'The key to return when matching pattern.'
   config_param :regexp, :string, :default => nil,
                :desc => 'The filtering regular expression.'
   config_param :exclude, :string, :default => nil,
