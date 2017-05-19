@@ -28,6 +28,10 @@ Use with regexp or exclude.
 DESC
   config_param :output_key, :string, :default => nil,
                :desc => 'The key to return when matching pattern.'
+  config_param :max_message_length, :integer, :default => nil,
+               :desc => 'Maximum length of message'
+  config_param :max_match_size, :integer, :default => nil,
+               :desc => 'Maximum size of match count'
   config_param :regexp, :string, :default => nil,
                :desc => 'The filtering regular expression.'
   config_param :exclude, :string, :default => nil,
@@ -190,7 +194,10 @@ DESC
           value = record[key].to_s
           throw :break_loop if @regexp and !match(@regexp, value)
           throw :break_loop if @exclude and match(@exclude, value)
-          matches << (@output_key.nil? ? value : record[@output_key]) # old style stores as an array of values
+
+          message = @output_key ? record[@output_key] : value # old style stores as an array of values
+          message = (@max_message_length && message.length > @max_message_length) ? message[0..@max_message_length] + '...' : message
+          matches << message
         else
           @regexps.each do |key, regexp|
             throw :break_loop unless match(regexp, record[key].to_s)
@@ -279,6 +286,7 @@ DESC
     output = {}
     output['count'] = count
     if @input_key
+      matches = @max_match_size ? matches[0..@max_match_size - 1] : matches
       output['message'] = @delimiter ? matches.join(@delimiter) : matches
     else
       # no 'message' field in the case of regexpN and excludeN
