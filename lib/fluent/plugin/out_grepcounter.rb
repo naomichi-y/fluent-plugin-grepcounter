@@ -26,8 +26,10 @@ class Fluent::GrepCounterOutput < Fluent::Output
 The target field key to grep out.
 Use with regexp or exclude.
 DESC
-  config_param :output_key, :string, :default => nil,
-               :desc => 'The key to return when matching pattern.'
+  config_param :output, :string, :default => nil,
+               :desc => 'The format to return when matching pattern.'
+  config_param :output_keys, :string, :default => nil,
+               :desc => 'The key list to return when matching pattern.'
   config_param :max_message_length, :integer, :default => nil,
                :desc => 'Maximum length of message'
   config_param :max_match_size, :integer, :default => nil,
@@ -195,7 +197,8 @@ DESC
           throw :break_loop if @regexp and !match(@regexp, value)
           throw :break_loop if @exclude and match(@exclude, value)
 
-          message = @output_key ? record[@output_key] : value # old style stores as an array of values
+          # # old style stores as an array of values
+          message = @output && @output_keys ? @output%record.values_at(*@output_keys.split(',')) : value
           message = (@max_message_length && message.length > @max_message_length) ? message[0..@max_message_length] + '...' : message
           matches << message
         else
